@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptShield AI — Zero-Leak Local Redaction & Prompt Hardening Engine</title>
+  <meta name="description" content="Local-first, zero-telemetry PII and secrets redaction proxy for open-weight models (Gemma, Llama, Mistral).">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <span class="shield-icon">🛡️</span>
+        <div>
+          <h1>PromptShield <span class="badge">AI</span></h1>
+          <p class="subtitle">Zero-Leak Local Redaction Engine for Open-Weight Models</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <span class="status-indicator">
+          <span class="pulse-dot"></span>
+          100% Offline / Client-Side
+        </span>
+        <button id="themeToggleBtn" class="btn btn-ghost" title="Toggle Theme">🌓</button>
+        <a href="https://github.com/AaryanKumarSingh136/promptshield-ai" target="_blank" rel="noopener noreferrer" class="btn btn-outline">GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-layout">
+    <!-- Quick preset bar -->
+    <section class="preset-section">
+      <span class="preset-label">Load Test Presets:</span>
+      <div class="preset-buttons">
+        <button class="preset-btn" data-preset="api-keys">🔑 API Key & Server Secret</button>
+        <button class="preset-btn" data-preset="customer-support">👤 Customer Support PII</button>
+        <button class="preset-btn" data-preset="financial">💳 Financial & Card Info</button>
+        <button class="preset-btn" data-preset="code-leak">💻 Internal Stacktrace</button>
+      </div>
+    </section>
+
+    <!-- Main 2-column workspace -->
+    <section class="grid-workspace">
+      <!-- Left Panel: Raw Prompt Input & Sanitization Config -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-badge">INPUT</span>
+            <h2>Raw Unsanitized Prompt</h2>
+          </div>
+          <button id="clearInputBtn" class="btn btn-xs btn-ghost">Clear</button>
+        </div>
+
+        <div class="textarea-wrapper">
+          <textarea id="rawPromptInput" placeholder="Paste sensitive text, code, logs, or customer data here... e.g. 'Customer Alice (alice@corp.com, phone 415-555-0199) reported API key sk-proj-84f9b8721c...'" rows="10"></textarea>
+        </div>
+
+        <!-- Detection toggles -->
+        <div class="toggles-card">
+          <span class="toggles-title">Active Redaction Rules (Deterministic RegEx):</span>
+          <div class="toggles-grid">
+            <label class="toggle-item">
+              <input type="checkbox" id="ruleApiKey" checked>
+              <span>API Keys & Secrets</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="ruleEmail" checked>
+              <span>Email Addresses</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="rulePhone" checked>
+              <span>Phone Numbers</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="ruleIp" checked>
+              <span>IPv4 / IPv6 Addresses</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="ruleCreditCard" checked>
+              <span>Credit Card Numbers</span>
+            </label>
+            <label class="toggle-item">
+              <input type="checkbox" id="rulePath" checked>
+              <span>File Paths & Unix/Win Paths</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="action-row">
+          <button id="sanitizeBtn" class="btn btn-primary btn-block">
+            🛡️ Sanitize & Redact Tokens
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Panel: Redacted Preview & Metrics -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="panel-badge success">SANITIZED</span>
+            <h2>Zero-Leak Safe Prompt</h2>
+          </div>
+          <div class="header-actions">
+            <button id="copySanitizedBtn" class="btn btn-xs btn-outline">Copy Text</button>
+            <button id="exportJsonBtn" class="btn btn-xs btn-outline">Export Mapping</button>
+          </div>
+        </div>
+
+        <div class="textarea-wrapper">
+          <div id="sanitizedOutput" class="sanitized-box" contenteditable="false" placeholder="Sanitized prompt will appear here with highlighted surrogate tokens..."></div>
+        </div>
+
+        <!-- Threat / Redaction telemetry summary -->
+        <div class="telemetry-bar">
+          <div class="metric-card">
+            <span class="metric-val" id="tokensRedactedCount">0</span>
+            <span class="metric-lbl">Redacted Tokens</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-val" id="riskLevelScore">SAFE</span>
+            <span class="metric-lbl">Original Risk Level</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-val" id="processingTimeMs">0ms</span>
+            <span class="metric-lbl">Local Latency</span>
+          </div>
+        </div>
+
+        <!-- Discovered surrogates map list -->
+        <div class="surrogate-table-container">
+          <div class="surrogate-header">
+            <span>Discovered Secret Tokens & Surrogates</span>
+            <span id="surrogateCountLabel" class="text-muted">0 items</span>
+          </div>
+          <div id="surrogateList" class="surrogate-list">
+            <div class="empty-state">No sensitive tokens detected yet.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lower Section: Local Open-Weight Inference & De-Identification Playground -->
+    <section class="inference-section">
+      <div class="inference-card">
+        <div class="inference-header">
+          <div>
+            <h3>🤖 Local Open-Weight Model Runner & Rehydration</h3>
+            <p class="text-muted">Send the sanitized prompt to an offline SLM (Ollama / LocalAI / Simulated Gemma 2), then reverse the surrogate tokens on the generated response.</p>
+          </div>
+          <div class="inference-controls">
+            <select id="modelSelect" class="form-select">
+              <option value="simulated-gemma2">Offline Gemma 2 (Zero-Install Engine)</option>
+              <option value="ollama-gemma2">Ollama Local (gemma2:2b / http://localhost:11434)</option>
+              <option value="ollama-llama3">Ollama Local (llama3.2:3b)</option>
+            </select>
+            <button id="runInferenceBtn" class="btn btn-accent">Run Inference</button>
+          </div>
+        </div>
+
+        <div class="inference-grid">
+          <div class="inf-column">
+            <h4>Raw Model Output (Surrogates Intact)</h4>
+            <div id="rawModelOutput" class="code-preview-box">Awaiting execution...</div>
+          </div>
+          <div class="inf-column">
+            <h4>Rehydrated Output (Original PII Restored Privately)</h4>
+            <div id="rehydratedOutput" class="code-preview-box highlight-rehydrated">Awaiting execution...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture & Open Innovation Summary -->
+    <section class="info-section">
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>🔒 Why Local-First Matters</h4>
+          <p>Sending client data, proprietary logs, and API tokens to commercial cloud models creates irreversible compliance risks. PromptShield keeps token scrubbing and surrogate translation 100% on-device before any model ever sees it.</p>
+        </div>
+        <div class="info-card">
+          <h4>⚡ Zero Hallucinations on Secrets</h4>
+          <p>Language models cannot reliably detect every API key format or credit card checksum. PromptShield uses deterministic regular expressions with Shannon entropy calculation to guarantee zero PII leakage.</p>
+        </div>
+        <div class="info-card">
+          <h4>🔄 Bi-Directional Rehydration</h4>
+          <p>Surrogates like <code>[EMAIL_1]</code> allow open-weight models to follow reasoning steps without ever seeing the real address. Upon response, PromptShield restores the actual value locally with zero cloud involvement.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p>PromptShield AI — Built with Open-Weight Models & Local AI for <a href="https://dev.to/challenges/hf26" target="_blank" rel="noopener noreferrer">Hacktoberfest 2026</a>. Open source under the MIT License.</p>
+      <p class="text-muted">Designed by <a href="https://dev.to/aaryankumarsingh136" target="_blank" rel="noopener noreferrer">@aaryankumarsingh136</a></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
