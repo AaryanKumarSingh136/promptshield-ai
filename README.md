@@ -1,10 +1,11 @@
 # PromptShield AI 🛡️
 
 > **Zero-Leak Local Redaction & Prompt Hardening Engine for Open-Weight Models**  
-> *Built for Hacktoberfest 2026 Open-Source AI Challenge.*
+> *Built for Hacktoberfest 2026 Open-Source AI Challenge: Week 3*
 
 [![Tests](https://github.com/AaryanKumarSingh136/promptshield-ai/actions/workflows/test.yml/badge.svg)](https://github.com/AaryanKumarSingh136/promptshield-ai/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Challenge: Week 3](https://img.shields.io/badge/Hacktoberfest%202026-Week%203%20Challenge-orange.svg)](https://dev.to/challenges/hacktoberfest-week3-2026-10-19)
 [![Zero Telemetry](https://img.shields.io/badge/Telemetry-Zero%20Local-emerald.svg)](SECURITY.md)
 
 ---
@@ -80,8 +81,9 @@ Open innovation changes the game:
 
 ## 🏆 Hacktoberfest 2026 DEV Challenge
 
-- **Event:** Hacktoberfest Open-Source AI Challenge
-- **Tag:** `#hf26challenge`, `#devchallenge`
+- **Event:** Hacktoberfest Open-Source AI Challenge: Week 3
+- **Challenge Page:** [Hacktoberfest Week 3 Challenge on DEV](https://dev.to/challenges/hacktoberfest-week3-2026-10-19)
+- **Tag:** `#hf26challenge`, `#devchallenge`, `#ai`, `#opensource`
 - **Partner Categories Targeted:** Best Use of Gemma, Best Use of GitHub Copilot
 - **Live DEV Article:** [PromptShield AI on DEV](https://dev.to/aaryankumarsingh136)
 
